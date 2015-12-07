@@ -91,7 +91,22 @@ def read_bladestructure(filebase):
         layers = lheader[1:]
         nl = len(layers)
 
-        r['layers'] = layers
+        # check that layer names are of the type <%s><%02d>
+        lnames = []
+        basenames = []
+        for name in layers:
+            try:
+                split = re.match(r"([a-z]+)([0-9]+)", name, re.I).groups()
+                idx = basenames.count(split[0])
+                basenames.append(split[0])
+                lnames.append(split[0] + '%02d' % idx)
+            except:
+                split = re.match(r"([a-z]+)", name, re.I).groups()
+                idx = basenames.count(split[0])
+                basenames.append(split[0])
+                lnames.append(split[0] + '%02d' % idx)
+
+        r['layers'] = lnames
         r['thicknesses'] = cldata[:, 1:nl + 1]
         if cldata.shape[1] == nl*2 + 1:
             r['angles'] = cldata[:, nl + 1:2*nl+1 + 2]
@@ -111,7 +126,22 @@ def read_bladestructure(filebase):
         layers = lheader[1:]
         nl = len(layers)
 
-        r['layers'] = layers
+        # check that layer names are of the type <%s><%02d>
+        lnames = []
+        basenames = []
+        for name in layers:
+            try:
+                split = re.match(r"([a-z]+)([0-9]+)", name, re.I).groups()
+                idx = basenames.count(split[0])
+                basenames.append(split[0])
+                lnames.append(split[0] + '%02d' % idx)
+            except:
+                split = re.match(r"([a-z]+)", name, re.I).groups()
+                idx = basenames.count(split[0])
+                basenames.append(split[0])
+                lnames.append(split[0] + '%02d' % idx)
+
+        r['layers'] = lnames
         r['thicknesses'] = cldata[:, 1:nl + 1]
         if cldata.shape[1] == nl*2 + 1:
             r['angles'] = cldata[:, nl + 1:2*nl+1 + 2]
