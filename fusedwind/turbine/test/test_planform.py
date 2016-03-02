@@ -17,7 +17,7 @@ def configure(size_in=10, size_out=20):
     r = p.root.add('redist', PGLRedistributedPlanform('_st', size_in, s_new), promotes=['*'])
     p.setup()
     for k, v in pf.iteritems():
-        r.params[k] = v
+        r.params['blade_ae:' + k] = v
 
     return p
 
@@ -28,7 +28,7 @@ class PlanformTestCase(unittest.TestCase):
         size_out = 20
         p = configure(size_in, size_out)
         p.run()
-        self.assertEqual(np.testing.assert_array_almost_equal(p['x_st'], np.linspace(0, 1, size_out), decimal=4), None)
+        self.assertEqual(np.testing.assert_array_almost_equal(p['blade_st:x'], np.linspace(0, 1, size_out), decimal=4), None)
 
 if __name__ == '__main__':
 

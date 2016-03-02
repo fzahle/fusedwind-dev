@@ -563,7 +563,7 @@ class BladeStructureProperties(Component):
         self.capDPs.sort()
 
         self.add_param('blade_length', 1., units='m', desc='blade length')
-        self.add_param('blade_surface_st', np.zeros(sdim))
+        self.add_param('blade_st:surface', np.zeros(sdim))
         for i in range(self.nDP):
             self.add_param('DP%02d' % i, DPs[:, i])
 
@@ -604,7 +604,7 @@ class BladeStructureProperties(Component):
 
         smax = np.zeros(self.nsec)
         for i in range(self.nsec):
-            x = params['blade_surface_st'][:, i, :]
+            x = params['blade_st:surface'][:, i, :]
             af = AirfoilShape(points=x)
             smax[i] = af.smax
             for j in range(self.nDP):

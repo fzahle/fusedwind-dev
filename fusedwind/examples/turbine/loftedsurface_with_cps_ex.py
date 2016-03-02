@@ -77,23 +77,23 @@ if __name__ == '__main__':
 
     plt.figure()
     plt.axis('equal')
-    for i in range(p['blade_surface_st'].shape[1]):
-        plt.plot(p['blade_surface_st'][:,i, 2], p['blade_surface_st'][:,i, 0], 'r-')
-    plt.plot(p['blade_surface_st'][0, :, 2], p['blade_surface_st'][100, :, 0],'r-')
-    plt.plot(p['blade_surface_st'][0, :, 2], p['blade_surface_st'][0, :, 0],'r-')
-    plt.plot(p['z'], p['x'], 'r-', label='Original')
+    for i in range(p['blade_st:surface'].shape[1]):
+        plt.plot(p['blade_st:surface'][:,i, 2], p['blade_st:surface'][:,i, 0], 'r-')
+    plt.plot(p['blade_st:surface'][0, :, 2], p['blade_st:surface'][100, :, 0],'r-')
+    plt.plot(p['blade_st:surface'][0, :, 2], p['blade_st:surface'][0, :, 0],'r-')
+    plt.plot(p['blade_ae:z'], p['blade_ae:x'], 'r-', label='Original')
 
     # --- 6
 
     # add sweep to the blade
-    p['x_C'][-1]=-.05
+    p['blade_ae:x_C'][-1]=-.05
     p.run()
-    for i in range(p['blade_surface_st'].shape[1]):
-        plt.plot(p['blade_surface_st'][:,i, 2], p['blade_surface_st'][:,i, 0], 'b-')
-    plt.plot(p['z'], p['x'], 'b-', label='Swept')
-    plt.plot(p['blade_surface_st'][0, :, 2], p['blade_surface_st'][100, :, 0],'b-')
-    plt.plot(p['blade_surface_st'][0, :, 2], p['blade_surface_st'][0, :, 0],'b-')
-    plt.plot(p.root.pf_splines.x_s.Cx, p['x_C'], 'g--o', label='Spline CPs')
+    for i in range(p['blade_st:surface'].shape[1]):
+        plt.plot(p['blade_st:surface'][:,i, 2], p['blade_st:surface'][:,i, 0], 'b-')
+    plt.plot(p['blade_ae:z'], p['blade_ae:x'], 'b-', label='Swept')
+    plt.plot(p['blade_st:surface'][0, :, 2], p['blade_st:surface'][100, :, 0],'b-')
+    plt.plot(p['blade_st:surface'][0, :, 2], p['blade_st:surface'][0, :, 0],'b-')
+    plt.plot(p.root.pf_splines.x_s.Cx, p['blade_ae:x_C'], 'g--o', label='Spline CPs')
     plt.legend(loc='best')
     plt.savefig('bladesurface_topview.png')
     plt.show()
@@ -102,12 +102,12 @@ if __name__ == '__main__':
 
     # modify chord
     plt.figure()
-    plt.plot(p['s'], p['chord'], 'r-', label='Original')
-    p['chord_C'][1]=.01
-    p['chord_C'][2]=-.01
+    plt.plot(p['blade_ae:s'], p['blade_ae:chord'], 'r-', label='Original')
+    p['blade_ae:chord_C'][1]=.01
+    p['blade_ae:chord_C'][2]=-.01
     p.run()
-    plt.plot(p['z'], p['chord'], 'b-', label='Modified')
-    plt.plot(p.root.pf_splines.chord_s.Cx, p['chord_C'], 'g--o', label='Spline CPs')
+    plt.plot(p['blade_ae:z'], p['blade_ae:chord'], 'b-', label='Modified')
+    plt.plot(p.root.pf_splines.chord_s.Cx, p['blade_ae:chord_C'], 'g--o', label='Spline CPs')
     plt.plot(p.root.pf_splines.chord_s.s, p.root.pf_splines.chord_s._P, 'm--o', label='')
     plt.legend(loc='best')
     plt.savefig('chord_ffd_spline.png')

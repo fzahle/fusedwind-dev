@@ -35,8 +35,8 @@ def configure(cfg):
     r = p.root.add('blade_surf', d, promotes=['*'])
     p.setup()
     for k, v in pf.iteritems():
-        if k+'_st' in p.root.blade_surf.params.keys():
-            p.root.blade_surf.params[k+'_st'] = v
+        if 'blade_st:'+k in p.root.blade_surf.params.keys():
+            p.root.blade_surf.params['blade_st:' + k] = v
 
     return p
 
@@ -48,7 +48,7 @@ class PGLLoftedBladeSurfaceTestCase(unittest.TestCase):
 
         p = configure(cfg)
         p.run()
-        self.assertAlmostEqual(np.sum(p['blade_surface_st']), 775.21809362184081, places=6)
+        self.assertAlmostEqual(np.sum(p['blade_st:surface']), 775.21809362184081, places=6)
 
 if __name__ == '__main__':
 

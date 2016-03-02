@@ -244,15 +244,15 @@ class BladePlanformWriter(Component):
 
         self.filebase = filebase + '%i' % self.__hash__()
 
-        self.add_param('x', np.zeros(size_in))
-        self.add_param('y', np.zeros(size_in))
-        self.add_param('z', np.zeros(size_in))
-        self.add_param('chord', np.zeros(size_in))
-        self.add_param('rthick', np.zeros(size_in))
-        self.add_param('rot_x', np.zeros(size_in))
-        self.add_param('rot_y', np.zeros(size_in))
-        self.add_param('rot_z', np.zeros(size_in))
-        self.add_param('p_le', np.zeros(size_in))
+        self.add_param('blade_ae:x', np.zeros(size_in))
+        self.add_param('blade_ae:y', np.zeros(size_in))
+        self.add_param('blade_ae:z', np.zeros(size_in))
+        self.add_param('blade_ae:chord', np.zeros(size_in))
+        self.add_param('blade_ae:rthick', np.zeros(size_in))
+        self.add_param('blade_ae:rot_x', np.zeros(size_in))
+        self.add_param('blade_ae:rot_y', np.zeros(size_in))
+        self.add_param('blade_ae:rot_z', np.zeros(size_in))
+        self.add_param('blade_ae:p_le', np.zeros(size_in))
 
         self._exec_count = 0
 
@@ -261,15 +261,15 @@ class BladePlanformWriter(Component):
         self._exec_count += 1
 
         pf = {}
-        pf['x'] = params['x']
-        pf['y'] = params['y']
-        pf['z'] = params['z']
-        pf['rot_x'] = params['rot_x']
-        pf['rot_y'] = params['rot_y']
-        pf['rot_z'] = params['rot_z']
-        pf['chord'] = params['chord']
-        pf['rthick'] = params['rthick']
-        pf['p_le'] = params['p_le']
+        pf['x'] = params['blade_ae:x']
+        pf['y'] = params['blade_ae:y']
+        pf['z'] = params['blade_ae:z']
+        pf['rot_x'] = params['blade_ae:rot_x']
+        pf['rot_y'] = params['blade_ae:rot_y']
+        pf['rot_z'] = params['blade_ae:rot_z']
+        pf['chord'] = params['blade_ae:chord']
+        pf['rthick'] = params['blade_ae:rthick']
+        pf['p_le'] = params['blade_ae:p_le']
 
         write_blade_planform(pf, self.filebase + '_it%i.pfd'%self._exec_count)
 
@@ -358,49 +358,46 @@ class PGLRedistributedPlanform(Component):
         # options are 'linear', 'ncubic', 'pchip', 'akima'
         self.spline_type = 'akima'
 
-        self.add_param('s', np.zeros(size_in))
-        self.add_param('x', np.zeros(size_in))
-        self.add_param('y', np.zeros(size_in))
-        self.add_param('z', np.zeros(size_in))
-        self.add_param('chord', np.zeros(size_in))
-        self.add_param('rthick', np.zeros(size_in))
-        self.add_param('rot_x', np.zeros(size_in))
-        self.add_param('rot_y', np.zeros(size_in))
-        self.add_param('rot_z', np.zeros(size_in))
-        self.add_param('p_le', np.zeros(size_in))
+        self.add_param('blade_ae:s', np.zeros(size_in))
+        self.add_param('blade_ae:x', np.zeros(size_in))
+        self.add_param('blade_ae:y', np.zeros(size_in))
+        self.add_param('blade_ae:z', np.zeros(size_in))
+        self.add_param('blade_ae:chord', np.zeros(size_in))
+        self.add_param('blade_ae:rthick', np.zeros(size_in))
+        self.add_param('blade_ae:rot_x', np.zeros(size_in))
+        self.add_param('blade_ae:rot_y', np.zeros(size_in))
+        self.add_param('blade_ae:rot_z', np.zeros(size_in))
+        self.add_param('blade_ae:p_le', np.zeros(size_in))
 
         self.s_new = s_new
         size_out = s_new.shape[0]
         self._suffix = name
-        self.add_output('s'+name, np.zeros(size_out))
-        self.add_output('x'+name, np.zeros(size_out))
-        self.add_output('y'+name, np.zeros(size_out))
-        self.add_output('z'+name, np.zeros(size_out))
-        self.add_output('chord'+name, np.zeros(size_out))
-        self.add_output('rthick'+name, np.zeros(size_out))
-        self.add_output('rot_x'+name, np.zeros(size_out))
-        self.add_output('rot_y'+name, np.zeros(size_out))
-        self.add_output('rot_z'+name, np.zeros(size_out))
-        self.add_output('p_le'+name, np.zeros(size_out))
-        self.add_output('athick'+name, np.zeros(size_out))
+        self.add_output('blade%s:s' % name, np.zeros(size_out))
+        self.add_output('blade%s:x' % name, np.zeros(size_out))
+        self.add_output('blade%s:y' % name, np.zeros(size_out))
+        self.add_output('blade%s:z' % name, np.zeros(size_out))
+        self.add_output('blade%s:chord' % name, np.zeros(size_out))
+        self.add_output('blade%s:rthick' % name, np.zeros(size_out))
+        self.add_output('blade%s:rot_x' % name, np.zeros(size_out))
+        self.add_output('blade%s:rot_y' % name, np.zeros(size_out))
+        self.add_output('blade%s:rot_z' % name, np.zeros(size_out))
+        self.add_output('blade%s:p_le' % name, np.zeros(size_out))
+        self.add_output('blade%s:athick' % name, np.zeros(size_out))
 
 
     def solve_nonlinear(self, params, unknowns, resids):
 
-        # we need to dig into the _ByObjWrapper val to get the array
-        # values out
-        # pf_in = {name: val['val'].val for name, val in params.iteritems()}
         pf_in = {}
-        pf_in['s'] = params['s']
-        pf_in['x'] = params['x']
-        pf_in['y'] = params['y']
-        pf_in['z'] = params['z']
-        pf_in['rot_x'] = params['rot_x']
-        pf_in['rot_y'] = params['rot_y']
-        pf_in['rot_z'] = params['rot_z']
-        pf_in['chord'] = params['chord']
-        pf_in['rthick'] = params['rthick']
-        pf_in['p_le'] = params['p_le']
+        pf_in['s'] = params['blade_ae:s']
+        pf_in['x'] = params['blade_ae:x']
+        pf_in['y'] = params['blade_ae:y']
+        pf_in['z'] = params['blade_ae:z']
+        pf_in['rot_x'] = params['blade_ae:rot_x']
+        pf_in['rot_y'] = params['blade_ae:rot_y']
+        pf_in['rot_z'] = params['blade_ae:rot_z']
+        pf_in['chord'] = params['blade_ae:chord']
+        pf_in['rthick'] = params['blade_ae:rthick']
+        pf_in['p_le'] = params['blade_ae:p_le']
 
         if _PGL_installed:
             pf = redistribute_planform(pf_in, s=self.s_new, spline_type=self.spline_type)
@@ -411,8 +408,8 @@ class PGLRedistributedPlanform(Component):
                 pf[k] = spl(self.s_new)
 
         for k, v in pf.iteritems():
-            unknowns[k+self._suffix] = v
-        unknowns['athick'+self._suffix] = pf['chord'] * pf['rthick']
+            unknowns['blade%s:%s' % (self._suffix, k)] = v
+        unknowns['blade%s:athick' % self._suffix] = pf['chord'] * pf['rthick']
 
 
 class FFDSpline(Component):
@@ -476,13 +473,13 @@ class ScaleChord(Component):
         super(ScaleChord, self).__init__()
 
         self.add_param('blade_scale', 1.)
-        self.add_param('chord_in', np.zeros(size))
-        self.add_output('chord' + suffix, np.zeros(size))
+        self.add_param('blade_ae:chord_in', np.zeros(size))
+        self.add_output('blade_ae:chord' + suffix, np.zeros(size))
         self._suffix = suffix
 
     def solve_nonlinear(self, params, unknowns, resids):
 
-        unknowns['chord' + self._suffix] = params['chord_in'] / params['blade_scale']
+        unknowns['blade_ae:chord' + self._suffix] = params['blade_ae:chord_in'] / params['blade_scale']
 
 
 class ComputeAthick(Component):
@@ -494,13 +491,13 @@ class ComputeAthick(Component):
     def __init__(self, size):
         super(ComputeAthick, self).__init__()
 
-        self.add_param('chord', np.zeros(size))
-        self.add_param('rthick', np.zeros(size))
-        self.add_output('athick', np.zeros(size))
+        self.add_param('blade_ae:chord', np.zeros(size))
+        self.add_param('blade_ae:rthick', np.zeros(size))
+        self.add_output('blade_ae:athick', np.zeros(size))
 
     def solve_nonlinear(self, params, unknowns, resids):
 
-        unknowns['athick'] = params['chord'] * params['rthick']
+        unknowns['blade_ae:athick'] = params['blade_ae:chord'] * params['blade_ae:rthick']
 
 
 class ComputeSmax(Component):
@@ -508,16 +505,16 @@ class ComputeSmax(Component):
     def __init__(self, pf):
         super(ComputeSmax, self).__init__()
 
-        self.add_param('x', pf['x'])
-        self.add_param('y', pf['y'])
-        self.add_param('z', pf['z'])
+        self.add_param('blade_ae:x', pf['x'])
+        self.add_param('blade_ae:y', pf['y'])
+        self.add_param('blade_ae:z', pf['z'])
         self.add_output('blade_curve_length', 0.)
 
     def solve_nonlinear(self, params, unknowns, resids):
 
-        s = calculate_length(np.array([params['x'],
-                                       params['y'],
-                                       params['z']]).T)
+        s = calculate_length(np.array([params['blade_ae:x'],
+                                       params['blade_ae:y'],
+                                       params['blade_ae:z']]).T)
         unknowns['blade_curve_length'] = s[-1]
 
 
@@ -585,42 +582,46 @@ class SplinedBladePlanform(Group):
         # chord needs to be scaled according to blade scale parameter
         if name == 'chord':
             cname = name + '_c'
-            self.add(cname, IndepVarComp(name + '_C', np.zeros(len(Cx))), promotes=['*'])
-            c = self.add(name + '_s', FFDSpline('chord',
+            self.add(cname, IndepVarComp('blade_ae:'+name + '_C', np.zeros(len(Cx))), promotes=['*'])
+            c = self.add(name + '_s', FFDSpline('blade_ae:chord',
                                                 s=self.pfinit['s'],
                                                 P=self.pfinit['chord'],
                                                 Cx=Cx, scaler=scaler),
-                                                promotes=['chord_C'])
+                                                promotes=['blade_ae:chord_C'])
             c.spline_options['spline_type'] = spline_type
-            self.add('chord_scaler', ScaleChord(self._size), promotes=['blade_scale', 'chord'])
-            self.connect('chord_s.chord', 'chord_scaler.chord_in')
+            self.add('chord_scaler', ScaleChord(self._size), promotes=['blade_scale', 'blade_ae:chord'])
+            self.connect('chord_s.blade_ae:chord', 'chord_scaler.blade_ae:chord_in')
         else:
             cname = name + '_c'
-            self.add(cname, IndepVarComp(name + '_C', np.zeros(len(Cx))), promotes=['*'])
-            c = self.add(name + '_s', FFDSpline(name,
+            self.add(cname, IndepVarComp('blade_ae:'+name + '_C', np.zeros(len(Cx))), promotes=['*'])
+            c = self.add(name + '_s', FFDSpline('blade_ae:' + name,
                                                 s=self.pfinit['s'],
                                                 P=self.pfinit[name],
                                                 Cx=Cx, scaler=scaler),
-                                                promotes=[name, name + '_C'])
+                                                promotes=['blade_ae:' + name,
+                                                          'blade_ae:' + name + '_C'])
             c.spline_options['spline_type'] = spline_type
 
     def configure(self):
         """
         add IndepVarComp's for all remaining planform variables
         """
-        indeps = list(set(['s', 'x', 'y', 'z', 'rot_x', 'rot_y', 'rot_z', 'chord', 'rthick', 'p_le'])-set(self._vars))
+        indeps = list(set(['s', 'x', 'y', 'z',
+                           'rot_x', 'rot_y', 'rot_z',
+                           'chord', 'rthick', 'p_le']) -
+                            set(self._vars))
 
         for name in indeps:
-            self.add(name+'_c', IndepVarComp(name, self.pfinit[name]), promotes=[name])
+            self.add(name+'_c', IndepVarComp('blade_ae:'+name, self.pfinit[name]), promotes=['blade_ae:'+name])
 
 
         c = self.add('smax_c', ComputeSmax(self.pfinit), promotes=['blade_curve_length'])
-        self.connect('x', 'smax_c.x')
-        self.connect('y', 'smax_c.y')
-        self.connect('z', 'smax_c.z')
-        self.add('athick_c', ComputeAthick(self._size), promotes=['athick'])
-        self.connect('rthick', 'athick_c.rthick')
-        self.connect('chord', 'athick_c.chord')
+        self.connect('blade_ae:x', 'smax_c.blade_ae:x')
+        self.connect('blade_ae:y', 'smax_c.blade_ae:y')
+        self.connect('blade_ae:z', 'smax_c.blade_ae:z')
+        self.add('athick_c', ComputeAthick(self._size), promotes=['blade_ae:athick'])
+        self.connect('blade_ae:rthick', 'athick_c.blade_ae:rthick')
+        self.connect('blade_ae:chord', 'athick_c.blade_ae:chord')
 
 
 class PGLLoftedBladeSurface(Component):
@@ -645,11 +646,11 @@ class PGLLoftedBladeSurface(Component):
                  'rot_x', 'rot_y', 'rot_z',
                  'chord', 'rthick','p_le']
         for name in names:
-            self.add_param(name+suffix, np.zeros(size_in))
+            self.add_param('blade%s:%s' % (suffix, name), np.zeros(size_in))
 
         self._suffix = suffix
-        self.add_output('blade_surface' + suffix, np.zeros(size_out))
-        self.add_output('blade_surface_norm' + suffix, np.zeros(size_out))
+        self.add_output('blade%s:surface' % suffix, np.zeros(size_out))
+        self.add_output('blade%s:surface_norm' % suffix, np.zeros(size_out))
 
         # for i in range(size_in[1]):
         #     self.add_param('base_af%02d' % i, np.zeros(size_in[0], 2))
@@ -699,11 +700,11 @@ class PGLLoftedBladeSurface(Component):
     def solve_nonlinear(self, params, unknowns, resids):
 
         if self._dry_run:
-            ni = params['s'  + self._suffix].shape[0]
+            ni = params['blade%s:s' % self._suffix].shape[0]
             surf = np.zeros([self.config['ni_chord'], ni, 3])
-            surf[:, :, 2] = params['s'  + self._suffix]
-            self.unknowns['blade_surface' + self._suffix] = surf
-            self.unknowns['blade_surface_norm' + self._suffix] = surf
+            surf[:, :, 2] = params['blade%s:s' % self._suffix]
+            self.unknowns['blade%s:surface' % self._suffix] = surf
+            self.unknowns['blade%s:surface_norm' % self._suffix] = surf
             return
 
         if not self._pgl_config_called:
@@ -711,21 +712,23 @@ class PGLLoftedBladeSurface(Component):
         # we need to dig into the _ByObjWrapper val to get the array
         # values out
         pf = {}
-        pf['s'] = params['s' + self._suffix]
-        pf['x'] = params['x' + self._suffix]
-        pf['y'] = params['y' + self._suffix]
-        pf['z'] = params['z' + self._suffix]
-        pf['rot_x'] = params['rot_x' + self._suffix]
-        pf['rot_y'] = params['rot_y' + self._suffix]
-        pf['rot_z'] = params['rot_z' + self._suffix]
-        pf['chord'] = params['chord' + self._suffix]
-        pf['rthick'] = params['rthick' + self._suffix]
-        pf['p_le'] = params['p_le' + self._suffix]
+        pf['s'] = params['blade%s:s' % self._suffix]
+        pf['x'] = params['blade%s:x' % self._suffix]
+        pf['y'] = params['blade%s:y' % self._suffix]
+        pf['z'] = params['blade%s:z' % self._suffix]
+        pf['rot_x'] = params['blade%s:rot_x' % self._suffix]
+        pf['rot_y'] = params['blade%s:rot_y' % self._suffix]
+        pf['rot_z'] = params['blade%s:rot_z' % self._suffix]
+        pf['chord'] = params['blade%s:chord' % self._suffix]
+        pf['rthick'] = params['blade%s:rthick' % self._suffix]
+        pf['p_le'] = params['blade%s:p_le' % self._suffix]
+
+        # call PGL to build lofted surface
         self.pgl_surf.pf = pf
         self.pgl_surf.build_blade()
 
         surf = self.pgl_surf.surface
         surfnorot = self.pgl_surf.surfnorot
 
-        self.unknowns['blade_surface' + self._suffix] = surf
-        self.unknowns['blade_surface_norm' + self._suffix] = surfnorot
+        self.unknowns['blade%s:surface' % self._suffix] = surf
+        self.unknowns['blade%s:surface_norm' % self._suffix] = surfnorot

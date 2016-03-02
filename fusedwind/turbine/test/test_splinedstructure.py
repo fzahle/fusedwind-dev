@@ -68,8 +68,8 @@ def configure_with_surface():
 
     p.setup()
     for k, v in pf.iteritems():
-        if k+'_st' in p.root.blade_surf.params.keys():
-            p.root.blade_surf.params[k+'_st'] = v
+        if 'blade_st:'+k in p.root.blade_surf.params.keys():
+            p.root.blade_surf.params['blade_st:'+k] = v
 
     return p
 
