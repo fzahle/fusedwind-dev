@@ -754,6 +754,8 @@ class ComputeDPsParam2(object):
         ps = range(self.te_DPs[0], self.le_DPs[0] + 1)
         ss = range(self.le_DPs[1], self.te_DPs[1] + 1)
         for i in range(self.ni):
+            DPs[i, :] = np.maximum(-1., DPs[i,:])
+            DPs[i, :] = np.minimum(1., DPs[i,:])
             for j in ps:
                 try:
                     min_width = self.min_width[j]
@@ -770,21 +772,31 @@ class ComputeDPsParam2(object):
                     DPs[i, j] = self.afs[i].s_to_11(self.afs[i].sLE)  + min_width
 
         # check for negative region widths
+        ps = range(1, self.le_DPs[0] + 1)
+        ss = range(self.le_DPs[1], self.te_DPs[1]+2)
+        psss = [ps, ss[::-1]]
+        self.DPs_save = DPs.copy()
+
         for i in range(self.ni):
-            for j in range(1, DPs.shape[1]-1):
-                try:
-                    min_width = self.min_width[j]
-                except:
-                    min_width = self.min_width
-                if np.diff(DPs[i, [j, j+1]]) < 0.:
-                    if j-1 in self.dominant_regions and j+1 not in self.cap_DPs:
-                        DPs[i, j+1] = DPs[i, j] + min_width
-                    elif j+1 in self.dominant_regions and j not in self.cap_DPs:
-                        DPs[i, j] = DPs[i, j+1] - min_width
-                    else:
-                        mid = 0.5 * (DPs[i, j] + DPs[i, j+1])
-                        DPs[i, j] = mid - min_width
-                        DPs[i, j+1] = mid + min_width
+            for side in [0, 1]:
+                sgn = -1.*side + (1-side)*1.
+                for jj,j in enumerate(psss[side]):
+                    try:
+                        min_width = self.min_width[j]
+                    except:
+                        min_width = self.min_width
+                    for k in psss[side][jj+1:]:
+                        if sgn * np.diff(DPs[i, [j, k]]) < 0.:
+                            if j-1*(1-side) in self.dominant_regions and k not in self.cap_DPs:
+                                DPs[i, k] = DPs[i, j] + min_width
+                            elif j-1*(1-side) in self.dominant_regions and k in self.cap_DPs:
+                                DPs[i, j] = DPs[i, k] + min_width
+                            elif k-1*side in self.dominant_regions and j not in self.cap_DPs:
+                                DPs[i, j] = DPs[i, k] - min_width
+                            else:
+                                mid = 0.5 * (DPs[i, j] + DPs[i, k])
+                                DPs[i, j] = mid - min_width
+                                DPs[i, k] = mid + min_width
 
     def plot(self, isec=None, ifig=1, coordsys='rotor'):
 
