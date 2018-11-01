@@ -641,7 +641,7 @@ class ComputeDPsParam2(object):
         self.dom.add_blocks(Block(self.surface[:, :, 0],
                                   self.surface[:, :, 1],
                                   self.surface[:, :, 2]))
-        surforg = self.dom.blocks['block']._block2arr()[:, :, 0, :].copy()
+        surforg = self.dom.blocks['block-00']._block2arr()[:, :, 0, :].copy()
         self.dom.rotate_z(self.struct_angle)
         if self.ref_axis == 'main_axis':
             x = self.x
@@ -657,7 +657,7 @@ class ComputeDPsParam2(object):
         self.pitch_axis = Curve(points=np.array([x, y, self.z]).T)
         self.pitch_axis.rotate_z(self.struct_angle)
 
-        surf = self.dom.blocks['block']._block2arr()[:, :, 0, :].copy()
+        surf = self.dom.blocks['block-00']._block2arr()[:, :, 0, :].copy()
 
         self.afsorg = []
         for i in range(surforg.shape[1]):
