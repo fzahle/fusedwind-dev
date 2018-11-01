@@ -266,7 +266,7 @@ def write_blade_planform(pf, filename):
         path to file containing planform data
     """
 
-    data = np.zeros((pf['x'].shape[0], 9))
+    data = np.zeros((pf['x'].shape[0], 10))
     s = calculate_length(data[:, [0, 1, 2]])
 
     names = ['x', 'y', 'z', 'rot_x', 'rot_y', 'rot_z',
@@ -585,6 +585,7 @@ class ComputeSmax(Component):
         self.add_param('y', pf['y'])
         self.add_param('z', pf['z'])
         self.add_output('blade_curve_length', 0.)
+        self.add_output('s', np.zeros(pf['x'].shape[0]))
 
     def solve_nonlinear(self, params, unknowns, resids):
 
@@ -592,6 +593,7 @@ class ComputeSmax(Component):
                                        params['y'],
                                        params['z']]).T)
         unknowns['blade_curve_length'] = s[-1]
+        unknowns['s'] = s
 
 
 class SplinedBladePlanform(Group):
@@ -658,6 +660,7 @@ class SplinedBladePlanform(Group):
 
         self._vars.append(name)
         # chord needs to be scaled according to blade scale parameter
+        spl_indeps = []
         if name == 'chord':
             cname = name + '_c'
             self.add(cname, IndepVarComp(name + '_C', np.zeros(len(Cx))), promotes=['*'])
@@ -691,13 +694,15 @@ class SplinedBladePlanform(Group):
         """
         add IndepVarComp's for all remaining planform variables
         """
-        indeps = list(set(['s', 'x', 'y', 'z', 'rot_x', 'rot_y', 'rot_z', 'chord', 'rthick', 'p_le'])-set(self._vars))
+        indeps = list(set(['x', 'y', 'z', 'rot_x', 'rot_y', 'rot_z', 'chord', 'rthick', 'p_le', 'dy'])-set(self._vars))
 
+        indep_tups = []
         for name in indeps:
-            self.add(name+'_c', IndepVarComp(name, self.pfinit[name]), promotes=[name])
+            indep_tups.append((name, self.pfinit[name]))
+        self.add('pf_c', IndepVarComp(indep_tups), promotes=indeps)
 
 
-        c = self.add('smax_c', ComputeSmax(self.pfinit), promotes=['blade_curve_length'])
+        c = self.add('smax_c', ComputeSmax(self.pfinit), promotes=['blade_curve_length', 's'])
         self.connect('x', 'smax_c.x')
         self.connect('y', 'smax_c.y')
         self.connect('z', 'smax_c.z')
